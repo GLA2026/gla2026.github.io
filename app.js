@@ -56,6 +56,36 @@ function factorMargenRegional(margen) {
   return { factor: 0, rango: "Menos de 0%: 0%" };
 }
 
+
+function actualizarEstadoTrimestral(tipo) {
+  const esSucursal = tipo === "sucursal";
+  const cierreId = esSucursal ? "gsEsCierreTrimestral" : "grEsCierreTrimestral";
+  const cardId = esSucursal ? "gsQuarterCard" : "grQuarterCard";
+  const statusId = esSucursal ? "gsQuarterStatus" : "grQuarterStatus";
+  const auditoriaSelectId = esSucursal ? "gsTieneAuditoria" : "grTieneAuditoria";
+  const auditoriaScoreId = esSucursal ? "gsAuditoriaTrim" : "grAuditoriaTrim";
+
+  const habilitado = $(cierreId).value === "si";
+  const card = $(cardId);
+  card.classList.toggle("is-disabled", !habilitado);
+
+  card.querySelectorAll("input, select").forEach((control) => {
+    control.disabled = !habilitado;
+  });
+
+  if (habilitado) {
+    $(auditoriaSelectId).disabled = false;
+    $(auditoriaScoreId).disabled = $(auditoriaSelectId).value !== "si";
+    $(statusId).textContent =
+      "Cierre trimestral activado: el total incluye el incentivo mensual y el incentivo trimestral.";
+  } else {
+    $(statusId).textContent =
+      "No es cierre trimestral: esta sección no participa en el cálculo y el total corresponde solo al incentivo mensual.";
+  }
+
+  return habilitado;
+}
+
 // ---------------------------
 // Gerente de sucursal
 // ---------------------------
@@ -129,6 +159,19 @@ function calcularSucursal() {
   $("gsFactorMensual").textContent = percentText(mensual.factor);
   $("gsPagoMensual").textContent = moneyText(pagoMensual);
 
+  const esCierreTrimestral = actualizarEstadoTrimestral("sucursal");
+
+  if (!esCierreTrimestral) {
+    $("gsMargenTrim").textContent = "No aplica";
+    $("gsFactorMargen").textContent = "No aplica";
+    $("gsFactorAuditoria").textContent = "No aplica";
+    $("gsPagoTrimestral").textContent = moneyText(0);
+    $("gsPagoTotal").textContent = moneyText(pagoMensual);
+    $("gsFormulaTrim").textContent =
+      "El incentivo trimestral no se calcula porque el periodo no fue marcado como cierre trimestral.";
+    return;
+  }
+
   const ingresos = numeric("gsIngresosTrim");
   const utilidad = numeric("gsUtilidadTrim");
   const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
@@ -146,8 +189,12 @@ function calcularSucursal() {
     `Fórmula: ${moneyText(objetivo.trimestral)} × ${percentText(margenInfo.factor)} × ${percentText(auditoriaInfo.factor)} = ${moneyText(pagoTrim)}.`;
 }
 
+$("gsEsCierreTrimestral").addEventListener("change", calcularSucursal);
+
 $("gsTieneAuditoria").addEventListener("change", () => {
-  const enabled = $("gsTieneAuditoria").value === "si";
+  const enabled =
+    $("gsEsCierreTrimestral").value === "si" &&
+    $("gsTieneAuditoria").value === "si";
   $("gsAuditoriaTrim").disabled = !enabled;
   if (!enabled) $("gsAuditoriaTrim").value = "";
   calcularSucursal();
@@ -161,6 +208,7 @@ $("gsTieneAuditoria").addEventListener("change", () => {
 
 $("resetSucursal").addEventListener("click", () => {
   document.querySelectorAll("#sucursal input").forEach((input) => input.value = "");
+  $("gsEsCierreTrimestral").value = "no";
   $("gsTieneAuditoria").value = "no";
   $("gsAuditoriaTrim").disabled = true;
   calcularSucursal();
@@ -232,6 +280,20 @@ function calcularRegional() {
   $("grFactorMensual").textContent = percentText(mensual.factor);
   $("grPagoMensual").textContent = moneyText(pagoMensual);
 
+  const esCierreTrimestral = actualizarEstadoTrimestral("regional");
+
+  if (!esCierreTrimestral) {
+    $("grMargenTrim").textContent = "No aplica";
+    $("grFactorMargen").textContent = "No aplica";
+    $("grFactorSucursales").textContent = "No aplica";
+    $("grFactorAuditoria").textContent = "No aplica";
+    $("grPagoTrimestral").textContent = moneyText(0);
+    $("grPagoTotal").textContent = moneyText(pagoMensual);
+    $("grFormulaTrim").textContent =
+      "El incentivo trimestral no se calcula porque el periodo no fue marcado como cierre trimestral.";
+    return;
+  }
+
   const ingresos = numeric("grIngresosTrim");
   const utilidad = numeric("grUtilidadTrim");
   const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
@@ -252,8 +314,12 @@ function calcularRegional() {
 }
 
 $("grSucursales").addEventListener("change", renderCalificacionesRegional);
+$("grEsCierreTrimestral").addEventListener("change", calcularRegional);
+
 $("grTieneAuditoria").addEventListener("change", () => {
-  const enabled = $("grTieneAuditoria").value === "si";
+  const enabled =
+    $("grEsCierreTrimestral").value === "si" &&
+    $("grTieneAuditoria").value === "si";
   $("grAuditoriaTrim").disabled = !enabled;
   if (!enabled) $("grAuditoriaTrim").value = "";
   calcularRegional();
@@ -265,6 +331,7 @@ $("grTieneAuditoria").addEventListener("change", () => {
 $("resetRegional").addEventListener("click", () => {
   document.querySelectorAll("#regional input").forEach((input) => input.value = "");
   $("grSucursales").value = "";
+  $("grEsCierreTrimestral").value = "no";
   $("grTieneAuditoria").value = "no";
   $("grAuditoriaTrim").disabled = true;
   renderCalificacionesRegional();

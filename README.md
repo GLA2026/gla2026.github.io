@@ -75,3 +75,12 @@ Incentivo trimestral:
 ## Próxima etapa
 
 La autenticación con usuario y contraseña puede incorporarse posteriormente con Firebase Authentication sin modificar la lógica principal del simulador.
+
+
+## Habilitación del incentivo trimestral
+
+Cada simulador pregunta si el periodo corresponde a cierre trimestral.
+
+- Si se selecciona **No**, la sección trimestral queda deshabilitada, el incentivo trimestral es $0 y el total corresponde únicamente al incentivo mensual.
+- Si se selecciona **Sí**, se habilitan los campos trimestrales y el total suma incentivo mensual más incentivo trimestral.
+- En un calendario trimestral estándar, los meses de cierre son marzo, junio, septiembre y diciembre.

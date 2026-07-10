@@ -58,6 +58,15 @@
                 <input id="sucursalVentaPromedio" type="number" min="0" step="1000" placeholder="0" />
               </div>
             </label>
+
+            <label class="field field--full">
+              <span>¿Este periodo corresponde a cierre trimestral?</span>
+              <select id="gsEsCierreTrimestral">
+                <option value="no">No, calcular solo incentivo mensual</option>
+                <option value="si">Sí, calcular incentivo mensual y trimestral</option>
+              </select>
+              <small>En un calendario trimestral estándar, los cierres son marzo, junio, septiembre y diciembre.</small>
+            </label>
           </div>
 
           <div class="summary-strip">
@@ -175,13 +184,16 @@
         </div>
       </section>
 
-      <section class="card card--wide">
+      <section id="gsQuarterCard" class="card card--wide quarter-card is-disabled">
         <div class="card__header">
           <span class="step">4</span>
           <div>
             <h3>Evaluación trimestral</h3>
             <p>Captura ingresos, utilidad operativa y, cuando exista, la calificación de auditoría.</p>
           </div>
+        </div>
+        <div id="gsQuarterStatus" class="quarter-status">
+          Se habilitará cuando indiques que el periodo corresponde a cierre trimestral.
         </div>
 
         <div class="form-grid form-grid--4">
@@ -230,7 +242,7 @@
             <strong id="gsPagoTrimestral">$0</strong>
           </article>
           <article class="result-card result-card--total">
-            <span>Total del mes de cierre</span>
+            <span>Total a pagar en el periodo</span>
             <strong id="gsPagoTotal">$0</strong>
           </article>
         </div>
@@ -272,6 +284,15 @@
                 <option value="4">4 sucursales</option>
                 <option value="6">6 sucursales</option>
               </select>
+            </label>
+
+            <label class="field field--full">
+              <span>¿Este periodo corresponde a cierre trimestral?</span>
+              <select id="grEsCierreTrimestral">
+                <option value="no">No, calcular solo incentivo mensual</option>
+                <option value="si">Sí, calcular incentivo mensual y trimestral</option>
+              </select>
+              <small>En un calendario trimestral estándar, los cierres son marzo, junio, septiembre y diciembre.</small>
             </label>
           </div>
 
@@ -330,13 +351,16 @@
         </div>
       </section>
 
-      <section class="card card--wide">
+      <section id="grQuarterCard" class="card card--wide quarter-card is-disabled">
         <div class="card__header">
           <span class="step">4</span>
           <div>
             <h3>Evaluación trimestral</h3>
             <p>Captura los resultados consolidados de la región y el porcentaje de observaciones sucursal-mes con utilidad positiva.</p>
           </div>
+        </div>
+        <div id="grQuarterStatus" class="quarter-status">
+          Se habilitará cuando indiques que el periodo corresponde a cierre trimestral.
         </div>
 
         <div class="form-grid form-grid--5">
@@ -396,7 +420,7 @@
             <strong id="grPagoTrimestral">$0</strong>
           </article>
           <article class="result-card result-card--total">
-            <span>Total del mes de cierre</span>
+            <span>Total a pagar en el periodo</span>
             <strong id="grPagoTotal">$0</strong>
           </article>
         </div>

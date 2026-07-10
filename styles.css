@@ -314,3 +314,41 @@ footer {
   .button--ghost { padding: 9px 11px; font-size: .85rem; }
   .card { padding: 18px; }
 }
+
+
+/* Control de cierre trimestral */
+.field small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.quarter-card {
+  position: relative;
+  transition: opacity .2s ease, filter .2s ease, border-color .2s ease;
+}
+
+.quarter-card.is-disabled {
+  opacity: .66;
+  filter: grayscale(.18);
+  border-style: dashed;
+}
+
+.quarter-card.is-disabled input,
+.quarter-card.is-disabled select {
+  cursor: not-allowed;
+}
+
+.quarter-status {
+  margin: -4px 0 18px;
+  padding: 11px 13px;
+  border-radius: 11px;
+  background: #eef4ff;
+  color: var(--blue-dark);
+  font-size: .88rem;
+  font-weight: 750;
+}
+
+.quarter-card:not(.is-disabled) .quarter-status {
+  background: var(--success-bg);
+  color: var(--success);
+}
