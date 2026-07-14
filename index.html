@@ -520,12 +520,15 @@
           </article>
 
           <label class="field">
-            <span>% sucursales-mes con utilidad positiva</span>
-            <div class="percent-input">
-              <input id="grSucursalesPositivas" type="number" min="0" max="100" step="0.01" placeholder="0" />
-              <span>%</span>
-            </div>
+            <span>Sucursales-mes con utilidad positiva</span>
+            <input id="grSucursalesPositivas" type="number" min="0" step="1" placeholder="Ej. 7" />
+            <small id="grBaseSucursalesMes">Base trimestral: selecciona las sucursales a cargo.</small>
           </label>
+
+          <article class="calc-cell">
+            <span>% con utilidad positiva</span>
+            <strong id="grPctSucursalesPositivas">No aplica</strong>
+          </article>
 
           <article class="calc-cell">
             <span>Multiplicador por consistencia</span>

@@ -978,3 +978,11 @@ td.numeric {
     font-size: 2.7rem;
   }
 }
+
+
+.field small {
+  color: var(--muted);
+  font-size: .75rem;
+  line-height: 1.35;
+  font-weight: 700;
+}

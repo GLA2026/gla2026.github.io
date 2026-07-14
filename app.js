@@ -323,6 +323,11 @@ function calcularRegional() {
   if (!quarterEnabled) {
     $("grMargenTrim").textContent = "No aplica";
     $("grFactorMargen").textContent = "No aplica";
+    $("grPctSucursalesPositivas").textContent = "No aplica";
+    $("grBaseSucursalesMes").textContent =
+      count > 0
+        ? `Base trimestral: ${count} sucursales × 3 meses = ${count * 3} sucursales-mes.`
+        : "Base trimestral: selecciona las sucursales a cargo.";
     $("grFactorSucursales").textContent = "No aplica";
     $("grFactorAuditoria").textContent = "No aplica";
     $("grPagoTrimestral").textContent = moneyText(0);
@@ -333,18 +338,28 @@ function calcularRegional() {
     const utilidad = value("grUtilidadTrim");
     const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
     const factorMargen = factorMargenRegional(margen);
-    const factorSucursales = factorSucursalesPositivas(value("grSucursalesPositivas"));
+    const baseSucursalesMes = count > 0 ? count * 3 : 0;
+    const conteoSucursalesPositivas = value("grSucursalesPositivas");
+    const porcentajeSucursalesPositivas =
+      baseSucursalesMes > 0 ? (conteoSucursalesPositivas / baseSucursalesMes) * 100 : 0;
+    const factorSucursales = factorSucursalesPositivas(porcentajeSucursalesPositivas);
     const aplicaAuditoria = $("grTieneAuditoria").value === "si";
     const audit = factorAuditoria(value("grAuditoriaTrim"), aplicaAuditoria);
 
     pagoTrimestral = objetivo * factorMargen.factor * factorSucursales.factor * audit.factor;
     $("grMargenTrim").textContent = `${number2.format(margen)}%`;
     $("grFactorMargen").textContent = pctText(factorMargen.factor);
+    $("grPctSucursalesPositivas").textContent = `${number2.format(porcentajeSucursalesPositivas)}%`;
+    $("grBaseSucursalesMes").textContent =
+      baseSucursalesMes > 0
+        ? `Base trimestral: ${count} sucursales × 3 meses = ${baseSucursalesMes} sucursales-mes.`
+        : "Base trimestral: selecciona las sucursales a cargo.";
     $("grFactorSucursales").textContent = `${number2.format(factorSucursales.factor)}x`;
     $("grFactorAuditoria").textContent = pctText(audit.factor);
     $("grPagoTrimestral").textContent = moneyText(pagoTrimestral);
     $("grFormulaTrim").textContent =
-      `Fórmula: ${moneyText(objetivo)} × ${pctText(factorMargen.factor)} × ${number2.format(factorSucursales.factor)}x × ${pctText(audit.factor)} = ${moneyText(pagoTrimestral)}.`;
+      `Fórmula: ${moneyText(objetivo)} × ${pctText(factorMargen.factor)} × ${number2.format(factorSucursales.factor)}x × ${pctText(audit.factor)} = ${moneyText(pagoTrimestral)}. ` +
+      `Consistencia: ${number2.format(conteoSucursalesPositivas)} de ${baseSucursalesMes} sucursales-mes = ${number2.format(porcentajeSucursalesPositivas)}%.`;
     $("grTotalDetalle").textContent = "Incluye incentivo mensual + incentivo trimestral.";
   }
 
