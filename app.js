@@ -10,25 +10,55 @@ const number2 = new Intl.NumberFormat("es-MX", {
 });
 
 const $ = (id) => document.getElementById(id);
-const numeric = (id) => {
-  const value = Number($(id)?.value);
-  return Number.isFinite(value) ? value : 0;
-};
 
-const percentText = (factor) => `${number2.format(factor * 100)}%`;
-const moneyText = (value) => money.format(Number.isFinite(value) ? value : 0);
+function value(id) {
+  const node = $(id);
+  const n = Number(node?.value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function moneyText(n) {
+  return money.format(Number.isFinite(n) ? n : 0);
+}
+
+function pctText(factor) {
+  return `${number2.format(factor * 100)}%`;
+}
+
+function clampScore(score) {
+  return Math.max(0, Math.min(100, score));
+}
+
+function setProgress(id, score) {
+  $(id).style.width = `${clampScore(score)}%`;
+}
 
 // ---------------------------
 // Navegación
 // ---------------------------
-document.querySelectorAll(".tab").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach((tab) => tab.classList.remove("is-active"));
-    document.querySelectorAll(".panel").forEach((panel) => panel.classList.remove("is-active"));
-    button.classList.add("is-active");
-    $(button.dataset.target).classList.add("is-active");
+document.querySelectorAll(".role-tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".role-tab").forEach((t) => t.classList.remove("is-active"));
+    document.querySelectorAll(".screen").forEach((screen) => screen.classList.remove("is-active"));
+    tab.classList.add("is-active");
+    $(tab.dataset.target).classList.add("is-active");
   });
 });
+
+function setupSegmented(hiddenId, noId, siId, callback) {
+  const hidden = $(hiddenId);
+  const no = $(noId);
+  const si = $(siId);
+
+  [no, si].forEach((button) => {
+    button.addEventListener("click", () => {
+      hidden.value = button.dataset.value;
+      no.classList.toggle("is-active", hidden.value === "no");
+      si.classList.toggle("is-active", hidden.value === "si");
+      callback();
+    });
+  });
+}
 
 // ---------------------------
 // Reglas compartidas
@@ -56,287 +86,332 @@ function factorMargenRegional(margen) {
   return { factor: 0, rango: "Menos de 0%: 0%" };
 }
 
+function enableQuarter(tipo) {
+  const isSucursal = tipo === "sucursal";
+  const enabled = $(isSucursal ? "gsEsCierreTrimestral" : "grEsCierreTrimestral").value === "si";
+  const card = $(isSucursal ? "gsQuarterCard" : "grQuarterCard");
+  const status = $(isSucursal ? "gsQuarterStatus" : "grQuarterStatus");
+  const auditSelect = $(isSucursal ? "gsTieneAuditoria" : "grTieneAuditoria");
+  const auditScore = $(isSucursal ? "gsAuditoriaTrim" : "grAuditoriaTrim");
 
-function actualizarEstadoTrimestral(tipo) {
-  const esSucursal = tipo === "sucursal";
-  const cierreId = esSucursal ? "gsEsCierreTrimestral" : "grEsCierreTrimestral";
-  const cardId = esSucursal ? "gsQuarterCard" : "grQuarterCard";
-  const statusId = esSucursal ? "gsQuarterStatus" : "grQuarterStatus";
-  const auditoriaSelectId = esSucursal ? "gsTieneAuditoria" : "grTieneAuditoria";
-  const auditoriaScoreId = esSucursal ? "gsAuditoriaTrim" : "grAuditoriaTrim";
-
-  const habilitado = $(cierreId).value === "si";
-  const card = $(cardId);
-  card.classList.toggle("is-disabled", !habilitado);
+  card.classList.toggle("is-disabled", !enabled);
 
   card.querySelectorAll("input, select").forEach((control) => {
-    control.disabled = !habilitado;
+    control.disabled = !enabled;
   });
 
-  if (habilitado) {
-    $(auditoriaSelectId).disabled = false;
-    $(auditoriaScoreId).disabled = $(auditoriaSelectId).value !== "si";
-    $(statusId).textContent =
-      "Cierre trimestral activado: el total incluye el incentivo mensual y el incentivo trimestral.";
+  if (enabled) {
+    auditSelect.disabled = false;
+    auditScore.disabled = auditSelect.value !== "si";
+    status.textContent = "Cierre trimestral activado: se habilita el cálculo adicional del trimestre.";
   } else {
-    $(statusId).textContent =
-      "No es cierre trimestral: esta sección no participa en el cálculo y el total corresponde solo al incentivo mensual.";
+    status.textContent = "Se habilitará cuando indiques que el periodo corresponde a cierre trimestral.";
   }
 
-  return habilitado;
+  return enabled;
 }
 
 // ---------------------------
-// Gerente de sucursal
+// Gerente de Sucursal
 // ---------------------------
-const pesosSucursal = [
-  { rubro: "Ventas", indicador: "Venta vs. mismo periodo año anterior", peso: 0.50, id: "gsVentas", ajustable: true },
-  { rubro: "Ejecución operativa", indicador: "Auditoría de almacén", peso: 0.14, id: "gsAlmacen" },
-  { rubro: "Ejecución operativa", indicador: "Auditoría de cocina", peso: 0.09, id: "gsCocina" },
-  { rubro: "Ejecución operativa", indicador: "Auditoría de bar", peso: 0.09, id: "gsBar" },
-  { rubro: "Ejecución operativa", indicador: "Evaluación de look", peso: 0.09, id: "gsLook" },
-  { rubro: "Gestión de personal", indicador: "Resultado mensual de indicadores", peso: 0.09, id: "gsPersonal" },
+const indicadoresSucursal = [
+  { rubro: "Ventas", indicador: "Ventas vs. mismo mes del año anterior", peso: 0.50, input: "gsVentas", output: "gsVentasPts", ajustable: true },
+  { rubro: "Ejecución operativa", indicador: "Auditoría de almacén", peso: 0.14, input: "gsAlmacen", output: "gsAlmacenPts" },
+  { rubro: "Ejecución operativa", indicador: "Auditoría de cocina", peso: 0.09, input: "gsCocina", output: "gsCocinaPts" },
+  { rubro: "Ejecución operativa", indicador: "Auditoría de bar", peso: 0.09, input: "gsBar", output: "gsBarPts" },
+  { rubro: "Ejecución operativa", indicador: "Evaluación de look", peso: 0.09, input: "gsLook", output: "gsLookPts" },
+  { rubro: "Gestión de personal", indicador: "Resultado mensual de indicadores", peso: 0.09, input: "gsPersonal", output: "gsPersonalPts" },
 ];
 
-function objetivoSucursal(ventaPromedio) {
-  if (ventaPromedio < 4_500_000) return { mensual: 8_000, trimestral: 6_000, rango: "Menos de $4.5 mdp" };
-  if (ventaPromedio < 6_500_000) return { mensual: 12_000, trimestral: 9_000, rango: "$4.5 a menos de $6.5 mdp" };
-  if (ventaPromedio < 8_000_000) return { mensual: 16_000, trimestral: 12_000, rango: "$6.5 a menos de $8 mdp" };
-  if (ventaPromedio <= 10_000_000) return { mensual: 20_000, trimestral: 15_000, rango: "$8 a $10 mdp" };
-  return { mensual: 24_000, trimestral: 18_000, rango: "Más de $10 mdp" };
+function objetivoSucursal(venta) {
+  if (venta < 4_500_000) return { mensual: 8000, trimestral: 6000, rango: "Menos de 4.5 mdp" };
+  if (venta <= 6_500_000) return { mensual: 12000, trimestral: 9000, rango: "De 4.5 a 6.5 mdp" };
+  if (venta <= 8_000_000) return { mensual: 16000, trimestral: 12000, rango: "De 6.5 a 8 mdp" };
+  if (venta <= 10_000_000) return { mensual: 20000, trimestral: 15000, rango: "De 8 a 10 mdp" };
+  return { mensual: 24000, trimestral: 18000, rango: "Más de 10 mdp" };
 }
 
 function pagoMensualSucursal(score) {
   if (score > 97) return { factor: 1.4, rango: "Más de 97%" };
-  if (score >= 95) return { factor: 1.2, rango: "De 95% a 96.99%" };
-  if (score >= 93) return { factor: 1.0, rango: "De 93% a 94.99%" };
-  if (score >= 90) return { factor: 0.85, rango: "De 90% a 92.99%" };
-  if (score >= 85) return { factor: 0.60, rango: "De 85% a 89.99%" };
+  if (score >= 95) return { factor: 1.2, rango: "95% a 96.99%" };
+  if (score >= 93) return { factor: 1.0, rango: "93% a 94.99%" };
+  if (score >= 90) return { factor: 0.85, rango: "90% a 92.99%" };
+  if (score >= 85) return { factor: 0.60, rango: "85% a 89.99%" };
   return { factor: 0, rango: "Menos de 85%" };
 }
 
 function calcularSucursal() {
-  const objetivo = objetivoSucursal(numeric("sucursalVentaPromedio"));
+  const objetivo = objetivoSucursal(value("sucursalVentaPromedio"));
   $("sucursalObjetivoMensual").textContent = moneyText(objetivo.mensual);
   $("sucursalObjetivoTrimestral").textContent = moneyText(objetivo.trimestral);
 
-  const ticket = numeric("gsTicket");
-  const comensales = numeric("gsComensales");
-  const candado = ticket > 20 || comensales < -20;
+  const ticket = value("gsTicket");
+  const comensales = value("gsComensales");
+  const candadoActivo = ticket > 20 || comensales < -20;
 
-  const alert = $("candadoSucursal");
-  if (candado) {
-    alert.className = "alert alert--danger";
-    alert.textContent = "Candado activado: la calificación de ventas se reduce al 80% antes de aplicar su ponderación del 50%.";
+  const status = $("candadoSucursal");
+  const detalle = $("candadoDetalle");
+  if (candadoActivo) {
+    status.className = "status status--danger";
+    status.innerHTML = "<strong>⚠️ Candado activado</strong><span>La calificación de ventas se ajusta al 80% antes de aplicar su peso.</span>";
+    detalle.classList.remove("is-hidden");
   } else {
-    alert.className = "alert alert--success";
-    alert.textContent = "Candado no activado: la calificación de ventas se utiliza sin ajuste.";
+    status.className = "status status--success";
+    status.innerHTML = "<strong>✅ Candado no activado</strong><span>La calificación de ventas se mantiene sin ajuste.</span>";
+    detalle.classList.add("is-hidden");
   }
 
   let score = 0;
-  const rows = pesosSucursal.map((item) => {
-    const capturada = numeric(item.id);
-    const aplicable = item.ajustable && candado ? capturada * 0.8 : capturada;
+  const tableRows = indicadoresSucursal.map((item) => {
+    const capturado = value(item.input);
+    const aplicable = item.ajustable && candadoActivo ? capturado * 0.8 : capturado;
     const puntos = aplicable * item.peso;
     score += puntos;
+    $(item.output).textContent = `${number2.format(puntos)} pts`;
+
+    if (item.ajustable && candadoActivo) {
+      detalle.innerHTML = `
+        Ventas capturadas: <strong>${number2.format(capturado)}</strong><br>
+        Ventas ajustadas: <strong>${number2.format(aplicable)}</strong><br>
+        Puntos por ventas: <strong>${number2.format(puntos)}</strong>
+      `;
+    }
+
     return `
       <tr>
         <td>${item.rubro}</td>
         <td>${item.indicador}</td>
         <td>${number2.format(item.peso * 100)}%</td>
-        <td class="numeric">${number2.format(capturada)}</td>
+        <td class="numeric">${number2.format(capturado)}</td>
         <td class="numeric">${number2.format(aplicable)}</td>
         <td class="numeric">${number2.format(puntos)}</td>
-      </tr>`;
+      </tr>
+    `;
   }).join("");
 
-  $("tablaSucursalMensual").innerHTML = rows;
+  $("tablaSucursalMensual").innerHTML = tableRows;
   $("gsScoreFinal").textContent = number2.format(score);
+  $("gsScoreTop").textContent = number2.format(score);
+  setProgress("gsProgressBar", score);
 
   const mensual = pagoMensualSucursal(score);
   const pagoMensual = objetivo.mensual * mensual.factor;
   $("gsRangoMensual").textContent = mensual.rango;
-  $("gsFactorMensual").textContent = percentText(mensual.factor);
+  $("gsFactorMensual").textContent = pctText(mensual.factor);
   $("gsPagoMensual").textContent = moneyText(pagoMensual);
 
-  const esCierreTrimestral = actualizarEstadoTrimestral("sucursal");
+  const quarterEnabled = enableQuarter("sucursal");
+  let pagoTrimestral = 0;
 
-  if (!esCierreTrimestral) {
+  if (!quarterEnabled) {
     $("gsMargenTrim").textContent = "No aplica";
     $("gsFactorMargen").textContent = "No aplica";
     $("gsFactorAuditoria").textContent = "No aplica";
     $("gsPagoTrimestral").textContent = moneyText(0);
-    $("gsPagoTotal").textContent = moneyText(pagoMensual);
+    $("gsFormulaTrim").textContent = "El incentivo trimestral no se calcula porque el periodo no fue marcado como cierre trimestral.";
+    $("gsTotalDetalle").textContent = "Solo incentivo mensual.";
+  } else {
+    const ingresos = value("gsIngresosTrim");
+    const utilidad = value("gsUtilidadTrim");
+    const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
+    const factorMargen = factorMargenSucursal(margen);
+    const aplicaAuditoria = $("gsTieneAuditoria").value === "si";
+    const audit = factorAuditoria(value("gsAuditoriaTrim"), aplicaAuditoria);
+
+    pagoTrimestral = objetivo.trimestral * factorMargen.factor * audit.factor;
+    $("gsMargenTrim").textContent = `${number2.format(margen)}%`;
+    $("gsFactorMargen").textContent = pctText(factorMargen.factor);
+    $("gsFactorAuditoria").textContent = pctText(audit.factor);
+    $("gsPagoTrimestral").textContent = moneyText(pagoTrimestral);
     $("gsFormulaTrim").textContent =
-      "El incentivo trimestral no se calcula porque el periodo no fue marcado como cierre trimestral.";
-    return;
+      `Fórmula: ${moneyText(objetivo.trimestral)} × ${pctText(factorMargen.factor)} × ${pctText(audit.factor)} = ${moneyText(pagoTrimestral)}.`;
+    $("gsTotalDetalle").textContent = "Incluye incentivo mensual + incentivo trimestral.";
   }
 
-  const ingresos = numeric("gsIngresosTrim");
-  const utilidad = numeric("gsUtilidadTrim");
-  const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
-  const margenInfo = factorMargenSucursal(margen);
-  const aplicaAuditoria = $("gsTieneAuditoria").value === "si";
-  const auditoriaInfo = factorAuditoria(numeric("gsAuditoriaTrim"), aplicaAuditoria);
-
-  const pagoTrim = objetivo.trimestral * margenInfo.factor * auditoriaInfo.factor;
-  $("gsMargenTrim").textContent = `${number2.format(margen)}%`;
-  $("gsFactorMargen").textContent = percentText(margenInfo.factor);
-  $("gsFactorAuditoria").textContent = percentText(auditoriaInfo.factor);
-  $("gsPagoTrimestral").textContent = moneyText(pagoTrim);
-  $("gsPagoTotal").textContent = moneyText(pagoMensual + pagoTrim);
-  $("gsFormulaTrim").textContent =
-    `Fórmula: ${moneyText(objetivo.trimestral)} × ${percentText(margenInfo.factor)} × ${percentText(auditoriaInfo.factor)} = ${moneyText(pagoTrim)}.`;
+  const total = pagoMensual + pagoTrimestral;
+  $("gsPagoTotal").textContent = moneyText(total);
+  $("gsTotalTop").textContent = moneyText(total);
 }
 
-$("gsEsCierreTrimestral").addEventListener("change", calcularSucursal);
+function resetSucursal() {
+  document.querySelectorAll("#sucursal input[type='text'], #sucursal input[type='number']").forEach((input) => {
+    input.value = "";
+  });
 
-$("gsTieneAuditoria").addEventListener("change", () => {
-  const enabled =
-    $("gsEsCierreTrimestral").value === "si" &&
-    $("gsTieneAuditoria").value === "si";
-  $("gsAuditoriaTrim").disabled = !enabled;
-  if (!enabled) $("gsAuditoriaTrim").value = "";
-  calcularSucursal();
-});
-
-[
-  "sucursalVentaPromedio", "gsVentas", "gsAlmacen", "gsCocina", "gsBar", "gsLook",
-  "gsPersonal", "gsTicket", "gsComensales", "gsIngresosTrim", "gsUtilidadTrim",
-  "gsAuditoriaTrim"
-].forEach((id) => $(id).addEventListener("input", calcularSucursal));
-
-$("resetSucursal").addEventListener("click", () => {
-  document.querySelectorAll("#sucursal input").forEach((input) => input.value = "");
   $("gsEsCierreTrimestral").value = "no";
+  $("gsCierreNo").classList.add("is-active");
+  $("gsCierreSi").classList.remove("is-active");
   $("gsTieneAuditoria").value = "no";
-  $("gsAuditoriaTrim").disabled = true;
   calcularSucursal();
-});
+}
 
 // ---------------------------
-// Gerente regional
+// Gerente Regional
 // ---------------------------
 const objetivosRegional = {
-  2: 10_000,
-  3: 14_000,
-  4: 18_000,
-  6: 26_000,
+  2: 10000,
+  3: 14000,
+  4: 18000,
+  6: 26000,
 };
 
 function pagoMensualRegional(score) {
   if (score > 98) return { factor: 1.4, rango: "Más de 98%" };
-  if (score >= 96) return { factor: 1.2, rango: "De 96% a 97.99%" };
-  if (score >= 94) return { factor: 1.0, rango: "De 94% a 95.99%" };
-  if (score >= 91) return { factor: 0.85, rango: "De 91% a 93.99%" };
-  if (score >= 86) return { factor: 0.60, rango: "De 86% a 90.99%" };
+  if (score >= 96) return { factor: 1.2, rango: "96% a 97.99%" };
+  if (score >= 94) return { factor: 1.0, rango: "94% a 95.99%" };
+  if (score >= 91) return { factor: 0.85, rango: "91% a 93.99%" };
+  if (score >= 86) return { factor: 0.60, rango: "86% a 90.99%" };
   return { factor: 0, rango: "Menos de 86%" };
 }
 
 function factorSucursalesPositivas(porcentaje) {
   if (porcentaje > 80) return { factor: 1.4, rango: "Más de 80%: 1.4x" };
-  if (porcentaje >= 60) return { factor: 1.2, rango: "De 60% a 80%: 1.2x" };
-  if (porcentaje >= 50) return { factor: 1.0, rango: "De 50% a 59.99%: 1.0x" };
+  if (porcentaje >= 60) return { factor: 1.2, rango: "60% a 80%: 1.2x" };
+  if (porcentaje >= 50) return { factor: 1.0, rango: "50% a 59.99%: 1.0x" };
   return { factor: 0.8, rango: "Menos de 50%: 0.8x" };
 }
 
-function renderCalificacionesRegional() {
-  const n = Number($("grSucursales").value);
+function renderRegionalScores() {
+  const count = Number($("grSucursales").value);
   const container = $("grCalificaciones");
+  const currentValues = [...container.querySelectorAll(".gr-score")].map((input) => input.value);
 
-  if (!n) {
+  if (!count) {
     container.innerHTML = '<p class="empty-state">Selecciona el número de sucursales para capturar sus calificaciones.</p>';
     calcularRegional();
     return;
   }
 
-  const previous = [...container.querySelectorAll("input")].map((input) => input.value);
-  container.innerHTML = Array.from({ length: n }, (_, i) => `
-    <label class="field">
-      <span>Calificación sucursal ${i + 1}</span>
-      <input class="gr-score" type="number" min="0" max="140" step="0.01" placeholder="0 a 140" value="${previous[i] ?? ""}" />
-    </label>
+  container.innerHTML = Array.from({ length: count }, (_, index) => `
+    <article class="branch-card">
+      <h3>🏪 Sucursal ${index + 1}</h3>
+      <label class="field">
+        <span>Calificación mensual</span>
+        <input class="gr-score" type="number" min="0" max="140" step="0.01" placeholder="0" value="${currentValues[index] ?? ""}" />
+      </label>
+    </article>
   `).join("");
 
-  container.querySelectorAll(".gr-score").forEach((input) => {
-    input.addEventListener("input", calcularRegional);
-  });
+  document.querySelectorAll(".gr-score").forEach((input) => input.addEventListener("input", calcularRegional));
   calcularRegional();
 }
 
 function calcularRegional() {
-  const n = Number($("grSucursales").value);
-  const objetivo = objetivosRegional[n] || 0;
+  const count = Number($("grSucursales").value);
+  const objetivo = objetivosRegional[count] || 0;
+
   $("grObjetivoMensual").textContent = moneyText(objetivo);
   $("grObjetivoTrimestral").textContent = moneyText(objetivo);
 
   const scores = [...document.querySelectorAll(".gr-score")].map((input) => Number(input.value) || 0);
-  const promedio = scores.length ? scores.reduce((sum, value) => sum + value, 0) / scores.length : 0;
-  const mensual = pagoMensualRegional(promedio);
-  const pagoMensual = objetivo * mensual.factor;
+  const promedio = scores.length ? scores.reduce((sum, item) => sum + item, 0) / scores.length : 0;
 
   $("grPromedio").textContent = number2.format(promedio);
+  $("grPromedioTop").textContent = number2.format(promedio);
+  $("grPromedioResult").textContent = number2.format(promedio);
+  setProgress("grProgressBar", promedio);
+
+  const mensual = pagoMensualRegional(promedio);
+  const pagoMensual = objetivo * mensual.factor;
   $("grRangoMensual").textContent = mensual.rango;
-  $("grFactorMensual").textContent = percentText(mensual.factor);
+  $("grFactorMensual").textContent = pctText(mensual.factor);
   $("grPagoMensual").textContent = moneyText(pagoMensual);
 
-  const esCierreTrimestral = actualizarEstadoTrimestral("regional");
+  const quarterEnabled = enableQuarter("regional");
+  let pagoTrimestral = 0;
 
-  if (!esCierreTrimestral) {
+  if (!quarterEnabled) {
     $("grMargenTrim").textContent = "No aplica";
     $("grFactorMargen").textContent = "No aplica";
     $("grFactorSucursales").textContent = "No aplica";
     $("grFactorAuditoria").textContent = "No aplica";
     $("grPagoTrimestral").textContent = moneyText(0);
-    $("grPagoTotal").textContent = moneyText(pagoMensual);
+    $("grFormulaTrim").textContent = "El incentivo trimestral no se calcula porque el periodo no fue marcado como cierre trimestral.";
+    $("grTotalDetalle").textContent = "Solo incentivo mensual.";
+  } else {
+    const ingresos = value("grIngresosTrim");
+    const utilidad = value("grUtilidadTrim");
+    const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
+    const factorMargen = factorMargenRegional(margen);
+    const factorSucursales = factorSucursalesPositivas(value("grSucursalesPositivas"));
+    const aplicaAuditoria = $("grTieneAuditoria").value === "si";
+    const audit = factorAuditoria(value("grAuditoriaTrim"), aplicaAuditoria);
+
+    pagoTrimestral = objetivo * factorMargen.factor * factorSucursales.factor * audit.factor;
+    $("grMargenTrim").textContent = `${number2.format(margen)}%`;
+    $("grFactorMargen").textContent = pctText(factorMargen.factor);
+    $("grFactorSucursales").textContent = `${number2.format(factorSucursales.factor)}x`;
+    $("grFactorAuditoria").textContent = pctText(audit.factor);
+    $("grPagoTrimestral").textContent = moneyText(pagoTrimestral);
     $("grFormulaTrim").textContent =
-      "El incentivo trimestral no se calcula porque el periodo no fue marcado como cierre trimestral.";
-    return;
+      `Fórmula: ${moneyText(objetivo)} × ${pctText(factorMargen.factor)} × ${number2.format(factorSucursales.factor)}x × ${pctText(audit.factor)} = ${moneyText(pagoTrimestral)}.`;
+    $("grTotalDetalle").textContent = "Incluye incentivo mensual + incentivo trimestral.";
   }
 
-  const ingresos = numeric("grIngresosTrim");
-  const utilidad = numeric("grUtilidadTrim");
-  const margen = ingresos > 0 ? (utilidad / ingresos) * 100 : 0;
-  const margenInfo = factorMargenRegional(margen);
-  const sucPosInfo = factorSucursalesPositivas(numeric("grSucursalesPositivas"));
-  const aplicaAuditoria = $("grTieneAuditoria").value === "si";
-  const auditoriaInfo = factorAuditoria(numeric("grAuditoriaTrim"), aplicaAuditoria);
-
-  const pagoTrim = objetivo * margenInfo.factor * sucPosInfo.factor * auditoriaInfo.factor;
-  $("grMargenTrim").textContent = `${number2.format(margen)}%`;
-  $("grFactorMargen").textContent = percentText(margenInfo.factor);
-  $("grFactorSucursales").textContent = `${number2.format(sucPosInfo.factor)}x`;
-  $("grFactorAuditoria").textContent = percentText(auditoriaInfo.factor);
-  $("grPagoTrimestral").textContent = moneyText(pagoTrim);
-  $("grPagoTotal").textContent = moneyText(pagoMensual + pagoTrim);
-  $("grFormulaTrim").textContent =
-    `Fórmula: ${moneyText(objetivo)} × ${percentText(margenInfo.factor)} × ${number2.format(sucPosInfo.factor)}x × ${percentText(auditoriaInfo.factor)} = ${moneyText(pagoTrim)}.`;
+  const total = pagoMensual + pagoTrimestral;
+  $("grPagoTotal").textContent = moneyText(total);
+  $("grTotalTop").textContent = moneyText(total);
 }
 
-$("grSucursales").addEventListener("change", renderCalificacionesRegional);
-$("grEsCierreTrimestral").addEventListener("change", calcularRegional);
+function resetRegional() {
+  document.querySelectorAll("#regional input[type='text'], #regional input[type='number']").forEach((input) => {
+    input.value = "";
+  });
+
+  $("grSucursales").value = "";
+  $("grCalificaciones").innerHTML = '<p class="empty-state">Selecciona el número de sucursales para capturar sus calificaciones.</p>';
+  $("grEsCierreTrimestral").value = "no";
+  $("grCierreNo").classList.add("is-active");
+  $("grCierreSi").classList.remove("is-active");
+  $("grTieneAuditoria").value = "no";
+  calcularRegional();
+}
+
+// ---------------------------
+// Eventos
+// ---------------------------
+setupSegmented("gsEsCierreTrimestral", "gsCierreNo", "gsCierreSi", calcularSucursal);
+setupSegmented("grEsCierreTrimestral", "grCierreNo", "grCierreSi", calcularRegional);
+
+[
+  "sucursalVentaPromedio",
+  "gsVentas",
+  "gsAlmacen",
+  "gsCocina",
+  "gsBar",
+  "gsLook",
+  "gsPersonal",
+  "gsTicket",
+  "gsComensales",
+  "gsIngresosTrim",
+  "gsUtilidadTrim",
+  "gsAuditoriaTrim",
+].forEach((id) => $(id).addEventListener("input", calcularSucursal));
+
+$("gsTieneAuditoria").addEventListener("change", () => {
+  $("gsAuditoriaTrim").disabled = $("gsEsCierreTrimestral").value !== "si" || $("gsTieneAuditoria").value !== "si";
+  if ($("gsAuditoriaTrim").disabled) $("gsAuditoriaTrim").value = "";
+  calcularSucursal();
+});
+
+$("resetSucursal").addEventListener("click", resetSucursal);
+
+$("grSucursales").addEventListener("change", renderRegionalScores);
+
+[
+  "grIngresosTrim",
+  "grUtilidadTrim",
+  "grSucursalesPositivas",
+  "grAuditoriaTrim",
+].forEach((id) => $(id).addEventListener("input", calcularRegional));
 
 $("grTieneAuditoria").addEventListener("change", () => {
-  const enabled =
-    $("grEsCierreTrimestral").value === "si" &&
-    $("grTieneAuditoria").value === "si";
-  $("grAuditoriaTrim").disabled = !enabled;
-  if (!enabled) $("grAuditoriaTrim").value = "";
+  $("grAuditoriaTrim").disabled = $("grEsCierreTrimestral").value !== "si" || $("grTieneAuditoria").value !== "si";
+  if ($("grAuditoriaTrim").disabled) $("grAuditoriaTrim").value = "";
   calcularRegional();
 });
 
-["grIngresosTrim", "grUtilidadTrim", "grSucursalesPositivas", "grAuditoriaTrim"]
-  .forEach((id) => $(id).addEventListener("input", calcularRegional));
-
-$("resetRegional").addEventListener("click", () => {
-  document.querySelectorAll("#regional input").forEach((input) => input.value = "");
-  $("grSucursales").value = "";
-  $("grEsCierreTrimestral").value = "no";
-  $("grTieneAuditoria").value = "no";
-  $("grAuditoriaTrim").disabled = true;
-  renderCalificacionesRegional();
-  calcularRegional();
-});
+$("resetRegional").addEventListener("click", resetRegional);
 
 // Inicialización
 calcularSucursal();
