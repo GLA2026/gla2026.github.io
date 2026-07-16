@@ -78,7 +78,6 @@
               <table class="score-table">
                 <thead>
                   <tr>
-                    <th>Rubro</th>
                     <th>Captura / indicador</th>
                     <th>Peso</th>
                     <th>Calificación</th>
@@ -86,8 +85,10 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <tr class="block-row block-row--ventas">
+                    <td colspan="4">Ventas</td>
+                  </tr>
                   <tr>
-                    <td class="rubro">Ventas</td>
                     <td>
                       <div class="table-input-grid">
                         <label class="mini-field">
@@ -146,8 +147,10 @@
                     <td class="points" id="gsVentasPts">0.00</td>
                   </tr>
 
+                  <tr class="block-row block-row--operacion">
+                    <td colspan="4">Operación</td>
+                  </tr>
                   <tr>
-                    <td class="rubro" rowspan="4">Operación</td>
                     <td>Auditoría de almacén</td>
                     <td class="center">14%</td>
                     <td><input class="table-score-input" id="gsAlmacen" type="number" min="0" max="140" step="0.01" placeholder="0" /></td>
@@ -172,8 +175,10 @@
                     <td class="points" id="gsLookPts">0.00</td>
                   </tr>
 
+                  <tr class="block-row block-row--rh">
+                    <td colspan="4">RH</td>
+                  </tr>
                   <tr>
-                    <td class="rubro">RH</td>
                     <td>
                       <div class="table-input-grid">
                         <label class="mini-field">
@@ -207,7 +212,7 @@
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colspan="4">Score mensual total</td>
+                    <td colspan="3">Score mensual total</td>
                     <td id="gsScoreTabla">0.00%</td>
                   </tr>
                 </tfoot>

@@ -751,3 +751,54 @@ select:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Versión v7: tabla por bloques, sin columna Rubro */
+.score-table th:nth-child(2),
+.score-table th:nth-child(3),
+.score-table th:nth-child(4),
+.score-table td:nth-child(2),
+.score-table td:nth-child(3),
+.score-table td:nth-child(4) {
+  white-space: nowrap;
+}
+
+.block-row td {
+  padding: 9px 12px !important;
+  border-top: 2px solid rgba(8, 43, 87, .14) !important;
+  border-bottom: 1px solid rgba(8, 43, 87, .14) !important;
+  font-weight: 950;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--blue-dark);
+}
+
+.block-row--ventas td {
+  background: #eaf3ff !important;
+}
+
+.block-row--operacion td {
+  background: #fff4e8 !important;
+  color: #87450d;
+}
+
+.block-row--rh td {
+  background: #eaf8ef !important;
+  color: #0b6534;
+}
+
+.score-table tbody tr.block-row + tr td {
+  border-top: 0;
+}
+
+.score-table .points {
+  min-width: 86px;
+}
+
+.score-table .center {
+  min-width: 118px;
+}
+
+.score-table .table-score-input {
+  width: 120px;
+}
