@@ -68,163 +68,150 @@
 
           <section class="section-card">
             <div class="section-head">
-              <h2>Ventas</h2>
-              <p>El simulador calcula automáticamente el crecimiento y la calificación de ventas.</p>
+              <div>
+                <h2>Score mensual</h2>
+                <p>Captura las variables necesarias. El simulador calcula calificaciones, pesos y puntos aportados.</p>
+              </div>
             </div>
 
-            <div class="sales-grid">
-              <div class="sales-inputs">
-                <div class="form-grid form-grid--2">
-                  <label class="field">
-                    <span>Ventas mismo mes año anterior</span>
-                    <div class="money-input">
-                      <span>$</span>
-                      <input id="gsVentasAnterior" type="number" min="0" step="1000" placeholder="0" />
-                    </div>
-                  </label>
-
-                  <label class="field">
-                    <span>Ventas mes actual</span>
-                    <div class="money-input">
-                      <span>$</span>
-                      <input id="gsVentasActual" type="number" min="0" step="1000" placeholder="0" />
-                    </div>
-                  </label>
-                </div>
-
-                <div class="computed-row">
-                  <div class="computed-box">
-                    <span>% de crecimiento</span>
-                    <strong id="gsCrecimientoVentas">0.00%</strong>
-                  </div>
-                  <div class="computed-box">
-                    <span>Calificación de ventas</span>
-                    <strong id="gsCalificacionVentas">0%</strong>
-                  </div>
-                </div>
-
-                <div class="rule-box">
-                  <strong id="gsRangoVentas">Rango aplicado: sin cálculo</strong>
-                  <p id="gsExplicacionVentas">Captura ventas del año anterior y ventas actuales para calcular el rango.</p>
-                </div>
-
-                <div class="lock-area">
-                  <h3>Candado comercial</h3>
-                  <div class="form-grid form-grid--2">
-                    <label class="field">
-                      <span>Variación ticket promedio (vs mmaa)</span>
-                      <div class="percent-input">
-                        <input id="gsTicket" type="number" step="0.01" placeholder="0" />
-                        <span>%</span>
+            <div class="table-wrap">
+              <table class="score-table">
+                <thead>
+                  <tr>
+                    <th>Rubro</th>
+                    <th>Captura / indicador</th>
+                    <th>Peso</th>
+                    <th>Calificación</th>
+                    <th>Puntos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="rubro">Ventas</td>
+                    <td>
+                      <div class="table-input-grid">
+                        <label class="mini-field">
+                          <span>Ventas mismo mes año anterior</span>
+                          <div class="money-input compact-input">
+                            <span>$</span>
+                            <input id="gsVentasAnterior" type="number" min="0" step="1000" placeholder="0" />
+                          </div>
+                        </label>
+                        <label class="mini-field">
+                          <span>Ventas mes actual</span>
+                          <div class="money-input compact-input">
+                            <span>$</span>
+                            <input id="gsVentasActual" type="number" min="0" step="1000" placeholder="0" />
+                          </div>
+                        </label>
                       </div>
-                    </label>
 
-                    <label class="field">
-                      <span>Variación de clientes (vs mmaa)</span>
-                      <div class="percent-input">
-                        <input id="gsComensales" type="number" step="0.01" placeholder="0" />
-                        <span>%</span>
+                      <div class="sub-result">
+                        <span>% crecimiento: <strong id="gsCrecimientoVentas">0.00%</strong></span>
+                        <span id="gsRangoVentas">Rango aplicado: sin cálculo</span>
                       </div>
-                    </label>
-                  </div>
-                  <p id="candadoSucursal" class="status ok">Candado no activado. La calificación de ventas se mantiene sin ajuste.</p>
-                </div>
-              </div>
 
-              <div class="sales-summary">
-                <h3>Resultado de ventas</h3>
-                <div class="mini-line">
-                  <span>Calificación original</span>
-                  <strong id="gsVentasOriginalResumen">0%</strong>
-                </div>
-                <div class="mini-line">
-                  <span>Calificación aplicable</span>
-                  <strong id="gsVentasAplicableResumen">0%</strong>
-                </div>
-                <div class="mini-line">
-                  <span>Peso</span>
-                  <strong>50%</strong>
-                </div>
-                <div class="mini-line total">
-                  <span>Puntos aportados</span>
-                  <strong id="gsVentasPts">0.00</strong>
-                </div>
-              </div>
-            </div>
-          </section>
+                      <p class="help-text" id="gsExplicacionVentas">
+                        Captura ventas del año anterior y ventas actuales para calcular la calificación.
+                      </p>
 
-          <section class="section-card compact">
-            <div class="section-head">
-              <h2>Operación</h2>
-              <p>Captura las calificaciones de auditoría y look.</p>
-            </div>
+                      <div class="lock-inline">
+                        <strong>Validación de ticket y comensales</strong>
+                        <div class="table-input-grid">
+                          <label class="mini-field">
+                            <span>Incremento ticket promedio vs. año anterior</span>
+                            <div class="percent-input compact-input">
+                              <input id="gsTicket" type="number" step="0.01" placeholder="0" />
+                              <span>%</span>
+                            </div>
+                          </label>
+                          <label class="mini-field">
+                            <span>Variación de comensales vs. año anterior</span>
+                            <div class="percent-input compact-input">
+                              <input id="gsComensales" type="number" step="0.01" placeholder="0" />
+                              <span>%</span>
+                            </div>
+                          </label>
+                        </div>
+                        <p id="candadoSucursal" class="status ok">Candado no activado. La calificación de ventas se mantiene sin ajuste.</p>
+                      </div>
+                    </td>
+                    <td class="center">50%</td>
+                    <td class="center">
+                      <div class="score-stack">
+                        <span>Original: <strong id="gsCalificacionVentas">0%</strong></span>
+                        <span>Aplicable: <strong id="gsVentasAplicableResumen">0%</strong></span>
+                      </div>
+                    </td>
+                    <td class="points" id="gsVentasPts">0.00</td>
+                  </tr>
 
-            <div class="form-grid form-grid--4">
-              <label class="field metric-field">
-                <span>Auditoría de almacén <b>14%</b></span>
-                <input id="gsAlmacen" type="number" min="0" max="140" step="0.01" placeholder="0" />
-                <small>Puntos: <strong id="gsAlmacenPts">0.00</strong></small>
-              </label>
+                  <tr>
+                    <td class="rubro" rowspan="4">Operación</td>
+                    <td>Auditoría de almacén</td>
+                    <td class="center">14%</td>
+                    <td><input class="table-score-input" id="gsAlmacen" type="number" min="0" max="140" step="0.01" placeholder="0" /></td>
+                    <td class="points" id="gsAlmacenPts">0.00</td>
+                  </tr>
+                  <tr>
+                    <td>Auditoría de cocina</td>
+                    <td class="center">9%</td>
+                    <td><input class="table-score-input" id="gsCocina" type="number" min="0" max="140" step="0.01" placeholder="0" /></td>
+                    <td class="points" id="gsCocinaPts">0.00</td>
+                  </tr>
+                  <tr>
+                    <td>Auditoría de bar</td>
+                    <td class="center">9%</td>
+                    <td><input class="table-score-input" id="gsBar" type="number" min="0" max="140" step="0.01" placeholder="0" /></td>
+                    <td class="points" id="gsBarPts">0.00</td>
+                  </tr>
+                  <tr>
+                    <td>Evaluación de look</td>
+                    <td class="center">9%</td>
+                    <td><input class="table-score-input" id="gsLook" type="number" min="0" max="140" step="0.01" placeholder="0" /></td>
+                    <td class="points" id="gsLookPts">0.00</td>
+                  </tr>
 
-              <label class="field metric-field">
-                <span>Auditoría de cocina <b>9%</b></span>
-                <input id="gsCocina" type="number" min="0" max="140" step="0.01" placeholder="0" />
-                <small>Puntos: <strong id="gsCocinaPts">0.00</strong></small>
-              </label>
-
-              <label class="field metric-field">
-                <span>Auditoría de bar <b>9%</b></span>
-                <input id="gsBar" type="number" min="0" max="140" step="0.01" placeholder="0" />
-                <small>Puntos: <strong id="gsBarPts">0.00</strong></small>
-              </label>
-
-              <label class="field metric-field">
-                <span>Evaluación de look <b>9%</b></span>
-                <input id="gsLook" type="number" min="0" max="140" step="0.01" placeholder="0" />
-                <small>Puntos: <strong id="gsLookPts">0.00</strong></small>
-              </label>
-            </div>
-          </section>
-
-          <section class="section-card compact">
-            <div class="section-head">
-              <h2>RH</h2>
-              <p>La calificación RH se calcula con rotación y capacitación.</p>
-            </div>
-
-            <div class="rh-grid">
-              <label class="field">
-                <span>% de rotación</span>
-                <div class="percent-input">
-                  <input id="gsRotacion" type="number" min="0" step="0.01" placeholder="0" />
-                  <span>%</span>
-                </div>
-              </label>
-
-              <label class="field">
-                <span>% cumplimiento de capacitación</span>
-                <div class="percent-input">
-                  <input id="gsCapacitacion" type="number" min="0" max="140" step="0.01" placeholder="0" />
-                  <span>%</span>
-                </div>
-              </label>
-
-              <div class="formula-card">
-                <span>Calificación rotación</span>
-                <strong>3.5% / % rotación</strong>
-                <small>Con tope máximo de 140%</small>
-              </div>
-
-              <div class="computed-box small">
-                <span>Calificación rotación</span>
-                <strong id="gsCalRotacion">0%</strong>
-              </div>
-
-              <div class="computed-box small">
-                <span>Calificación RH final</span>
-                <strong id="gsCalRH">0%</strong>
-                <small>80% rotación + 20% capacitación</small>
-              </div>
+                  <tr>
+                    <td class="rubro">RH</td>
+                    <td>
+                      <div class="table-input-grid">
+                        <label class="mini-field">
+                          <span>% de rotación</span>
+                          <div class="percent-input compact-input">
+                            <input id="gsRotacion" type="number" min="0" step="0.01" placeholder="0" />
+                            <span>%</span>
+                          </div>
+                        </label>
+                        <label class="mini-field">
+                          <span>% cumplimiento capacitación</span>
+                          <div class="percent-input compact-input">
+                            <input id="gsCapacitacion" type="number" min="0" max="140" step="0.01" placeholder="0" />
+                            <span>%</span>
+                          </div>
+                        </label>
+                      </div>
+                      <p class="help-text">
+                        Calificación rotación = 3.5% / % rotación. RH final = 80% rotación + 20% capacitación.
+                      </p>
+                    </td>
+                    <td class="center">9%</td>
+                    <td class="center">
+                      <div class="score-stack">
+                        <span>Rotación: <strong id="gsCalRotacion">0%</strong></span>
+                        <span>RH final: <strong id="gsCalRH">0%</strong></span>
+                      </div>
+                    </td>
+                    <td class="points" id="gsRHPts">0.00</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4">Score mensual total</td>
+                    <td id="gsScoreTabla">0.00%</td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </section>
 
@@ -288,7 +275,7 @@
           </div>
 
           <div class="result-line highlight">
-            <span>Monto de incentivo mensual</span>
+            <span>Incentivo mensual estimado</span>
             <strong id="gsPagoMensual">$0</strong>
           </div>
 
@@ -314,13 +301,13 @@
             </div>
 
             <div class="mini-line total">
-              <span>Monto de incentivo trimestral</span>
+              <span>Incentivo trimestral</span>
               <strong id="gsPagoTrimestral">$0</strong>
             </div>
           </div>
 
           <div class="grand-total">
-            <span>Total incentivo del periodo</span>
+            <span>Total estimado del periodo</span>
             <strong id="gsPagoTotal">$0</strong>
           </div>
 
@@ -459,7 +446,7 @@
           </div>
 
           <div class="result-line highlight">
-            <span>Monto de incentivo mensual</span>
+            <span>Incentivo mensual estimado</span>
             <strong id="grPagoMensual">$0</strong>
           </div>
 
@@ -496,7 +483,7 @@
           </div>
 
           <div class="grand-total">
-            <span>Total incentivo del periodo</span>
+            <span>Total estimado del periodo</span>
             <strong id="grPagoTotal">$0</strong>
           </div>
 

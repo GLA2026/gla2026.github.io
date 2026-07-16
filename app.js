@@ -26,44 +26,27 @@ function pctText(n) {
 
 const sucursales = [
   "Cabanna San Jerónimo",
+  "Cabanna Santa Fe",
   "Cabanna Polanco",
-  "Cabanna Puebla",
-  "Cabanna Av México",
-  "Cabanna Cd Juarez",
-  "Cabanna Mexicali",
-  "Cabanna Tijuana",
-  "Cabanna Culiacán",
   "Los Arcos San Jerónimo",
   "Los Arcos Insurgentes",
-  "Los Arcos Culiacán",
+  "Los Arcos Coyoacán",
   "Los Arcos Satélite",
   "Los Arcos Lomas",
   "Los Arcos Interlomas",
   "Los Arcos Tijuana",
   "Los Arcos León",
-  "Los Arcos Toluca",
-  "Los Arcos Lázaro Cárdenas",
-  "Los Arcos Acueducto",
-  "Los Arcos Cd Juarez",
-  "Los Arcos Mexicali",
-  "Los Arcos Morones",
-  "Los Arcos Garza Sada",
-  "Los Arcos Mazatlán",
-  "Los Arcos Aguascalientes",
-  "Lorenza Tijuana",
-  "Lorenza Culiacán",
+  "Lorenza",
   "Casa de Leo"
 ];
 
 const regiones = [
   "Centro",
   "Tijuana",
-  "Pacífico",
+  "Culiacán",
   "Monterrey",
-  "Guadalajara",
-  "Mexicali",
-  "Bajío",
-  "Juarez"
+  "León",
+  "Puebla / Toluca"
 ];
 
 function fillSelect(id, options, placeholder) {
@@ -131,13 +114,13 @@ function objetivoSucursal(ventaPromedio) {
 }
 
 function calificacionVentas(crecimiento) {
-  if (crecimiento >= 10) return { score: 100, rango: "10% o más", explicacion: "El crecimiento llegó al objetivo de +10% o más, por eso la calificación es de 100%." };
-  if (crecimiento >= 5) return { score: 95, rango: "+5% a +9.99%", explicacion: "El crecimiento quedó entre +5% y +9.99%, por eso la calificación es de 95%." };
-  if (crecimiento >= 0) return { score: 90, rango: "0% a +4.99%", explicacion: "El crecimiento quedó entre 0% y +4.99%, por eso la calificación es de 90%." };
-  if (crecimiento > -5) return { score: 85, rango: "-4.99% a -0.01%", explicacion: "La venta disminuyó hasta 4.99%, por eso la calificación es de 85%." };
-  if (crecimiento > -10) return { score: 80, rango: "-5% a -9.99%", explicacion: "La venta disminuyó entre 5% y 9.99%, por eso la calificación es de 80%." };
-  if (crecimiento > -15) return { score: 75, rango: "-10% a -14.99%", explicacion: "La venta disminuyó entre 10% y 14.99%, por eso la calificación es de 75%." };
-  return { score: 70, rango: "-15% o menor", explicacion: "La venta disminuyó 15% o más, por eso la calificación es de 70%." };
+  if (crecimiento >= 10) return { score: 100, rango: "10% o más", explicacion: "El crecimiento llegó al objetivo de +10% o más, por eso corresponde 100%." };
+  if (crecimiento >= 5) return { score: 95, rango: "+5% a +9.99%", explicacion: "El crecimiento quedó entre +5% y +9.99%, por eso corresponde 95%." };
+  if (crecimiento >= 0) return { score: 90, rango: "0% a +4.99%", explicacion: "El crecimiento quedó entre 0% y +4.99%, por eso corresponde 90%." };
+  if (crecimiento > -5) return { score: 85, rango: "-4.99% a -0.01%", explicacion: "La venta disminuyó hasta 4.99%, por eso corresponde 85%." };
+  if (crecimiento > -10) return { score: 80, rango: "-5% a -9.99%", explicacion: "La venta disminuyó entre 5% y 9.99%, por eso corresponde 80%." };
+  if (crecimiento > -15) return { score: 75, rango: "-10% a -14.99%", explicacion: "La venta disminuyó entre 10% y 14.99%, por eso corresponde 75%." };
+  return { score: 70, rango: "-15% o menor", explicacion: "La venta disminuyó 15% o más, por eso corresponde 70%." };
 }
 
 function pagoMensualSucursal(score) {
@@ -181,7 +164,6 @@ function calcularSucursal() {
   $("gsCalificacionVentas").textContent = pctText(ventasInfo.score);
   $("gsRangoVentas").textContent = `Rango aplicado: ${ventasInfo.rango}`;
   $("gsExplicacionVentas").textContent = ventasInfo.explicacion;
-  $("gsVentasOriginalResumen").textContent = pctText(ventasInfo.score);
 
   const ticket = val("gsTicket");
   const comensales = val("gsComensales");
@@ -190,7 +172,7 @@ function calcularSucursal() {
 
   $("candadoSucursal").className = `status ${candado ? "danger" : "ok"}`;
   $("candadoSucursal").textContent = candado
-    ? `Candado activado. La calificación de ventas se ajusta al 80%. Es decir, ${pctText(ventasInfo.score)} × 80% = ${pctText(ventasAplicable)}.`
+    ? `Candado activado. La calificación de ventas se ajusta al 80%: ${pctText(ventasInfo.score)} × 80% = ${pctText(ventasAplicable)}.`
     : "Candado no activado. La calificación de ventas se mantiene sin ajuste.";
 
   $("gsVentasAplicableResumen").textContent = pctText(ventasAplicable);
@@ -216,12 +198,14 @@ function calcularSucursal() {
 
   $("gsCalRotacion").textContent = pctText(calRotacion);
   $("gsCalRH").textContent = pctText(calRH);
+  $("gsRHPts").textContent = num2.format(puntosRH);
 
   const score = puntosVentas + almacen + cocina + bar + look + puntosRH;
   const pagoInfo = pagoMensualSucursal(score);
   const pagoMensual = objetivo.mensual * pagoInfo.factor;
 
   $("gsScoreFinal").textContent = pctText(score);
+  $("gsScoreTabla").textContent = pctText(score);
   $("gsFactorMensual").textContent = pctText(pagoInfo.factor * 100);
   $("gsPagoMensual").textContent = moneyText(pagoMensual);
 
