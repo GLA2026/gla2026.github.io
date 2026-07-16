@@ -3,572 +3,507 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Simulador visual de incentivos para Gerente de Sucursal y Gerente Regional de Grupo Los Arcos." />
+  <meta name="description" content="Simulador de incentivos para Gerente de Sucursal y Gerente Regional de Los Arcos." />
   <title>Simulador de Incentivos | Los Arcos</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="app-hero">
-    <div class="brand">
-      <div>
-        <p class="brand-title">LOS ARCOS · Simulador de Incentivos</p>
-        <p class="brand-subtitle">Calcula tu incentivo mensual y trimestral</p>
-      </div>
-    </div>
-
-    <div class="hero-actions" aria-label="Acciones informativas">
-      <span title="Ayuda">?</span>
-      <span title="Notificaciones">🔔</span>
-      <span title="Usuario">👤</span>
+  <header class="topbar">
+    <div>
+      <h1>Simulador de Incentivos Los Arcos</h1>
+      <p>Calcula tu incentivo mensual y trimestral</p>
     </div>
   </header>
 
-  <main class="app-shell">
-    <nav class="role-tabs" aria-label="Seleccionar esquema">
-      <button class="role-tab is-active" type="button" data-target="sucursal">Gerente de Sucursal</button>
-      <button class="role-tab" type="button" data-target="regional">Gerente Regional</button>
+  <main class="shell">
+    <nav class="tabs" aria-label="Seleccionar esquema">
+      <button class="tab is-active" type="button" data-target="sucursal">Gerente de Sucursal</button>
+      <button class="tab" type="button" data-target="regional">Gerente Regional</button>
     </nav>
 
     <!-- GERENTE DE SUCURSAL -->
     <section id="sucursal" class="screen is-active">
-      <section class="intro-card">
-        <div>
-          <p class="eyebrow">Esquema operativo</p>
-          <h1>Gerente de Sucursal</h1>
-          <p>Simula tu incentivo con base en ventas, operación y contribución.</p>
-        </div>
-        <button class="ghost-button" id="resetSucursal" type="button">Limpiar</button>
-      </section>
-
-      <section class="input-ribbon" aria-label="Datos generales de sucursal">
-        <label class="field">
-          <span>Sucursal</span>
-          <input id="sucursalNombre" type="text" placeholder="Ej. Los Arcos San Jerónimo" />
-        </label>
-
-        <label class="field">
-          <span>Venta mensual promedio del trimestre</span>
-          <div class="money-input">
-            <span>$</span>
-            <input id="sucursalVentaPromedio" type="number" min="0" step="1000" placeholder="0" />
-          </div>
-        </label>
-
-        <div class="field">
-          <span>¿Este periodo corresponde a cierre trimestral?</span>
-          <div class="segmented" role="group" aria-label="Cierre trimestral sucursal">
-            <button id="gsCierreNo" class="segment is-active" type="button" data-value="no">No</button>
-            <button id="gsCierreSi" class="segment" type="button" data-value="si">Sí</button>
-          </div>
-          <input id="gsEsCierreTrimestral" type="hidden" value="no" />
-        </div>
-      </section>
-
-      <section class="kpi-grid">
-        <article class="kpi kpi--orange">
-          <span class="kpi-icon">🎯</span>
-          <div>
-            <p>Objetivo mensual</p>
-            <strong id="sucursalObjetivoMensual">$0</strong>
-          </div>
-        </article>
-
-        <article class="kpi kpi--orange">
-          <span class="kpi-icon">📅</span>
-          <div>
-            <p>Objetivo trimestral</p>
-            <strong id="sucursalObjetivoTrimestral">$0</strong>
-          </div>
-        </article>
-
-        <article class="kpi kpi--blue">
-          <span class="kpi-icon">⭐</span>
-          <div>
-            <p>Score mensual</p>
-            <strong><span id="gsScoreTop">0.00</span> pts</strong>
-          </div>
-        </article>
-
-        <article class="kpi kpi--green">
-          <span class="kpi-icon">💵</span>
-          <div>
-            <p>Total estimado</p>
-            <strong id="gsTotalTop">$0</strong>
-          </div>
-        </article>
-      </section>
-
-      <div class="content-grid">
-        <section class="card">
-          <div class="section-title">
-            <span class="step">1</span>
-            <div>
-              <h2>Resultado mensual</h2>
-              <p>Captura tus calificaciones del mes. El sistema calcula la contribución de cada indicador.</p>
+      <div class="layout">
+        <div class="workspace">
+          <section class="section-card">
+            <div class="section-head">
+              <h2>Datos generales</h2>
+              <button class="ghost-button" type="button" id="resetSucursal">Limpiar</button>
             </div>
-          </div>
 
-          <div class="indicator-grid" id="sucursalIndicadores">
-            <article class="metric-card metric-card--blue">
-              <div class="metric-head">
-                <span class="metric-icon">📈</span>
-                <div>
-                  <h3>Ventas</h3>
-                  <p>Ventas vs. mismo mes del año anterior</p>
-                </div>
-                <strong>50%</strong>
-              </div>
-              <label>
-                <span>Score editable</span>
-                <input id="gsVentas" type="number" min="0" max="140" step="0.01" placeholder="0" />
+            <div class="form-grid form-grid--4">
+              <label class="field">
+                <span>Sucursal</span>
+                <select id="sucursalNombre"></select>
               </label>
-              <p class="contrib">Contribución <strong id="gsVentasPts">0.00 pts</strong></p>
-            </article>
 
-            <article class="metric-card metric-card--orange">
-              <div class="metric-head">
-                <span class="metric-icon">🧾</span>
-                <div>
-                  <h3>Almacén</h3>
-                  <p>Auditoría de almacén</p>
+              <label class="field">
+                <span>Venta mensual promedio del trimestre</span>
+                <div class="money-input">
+                  <span>$</span>
+                  <input id="sucursalVentaPromedio" type="number" min="0" step="1000" placeholder="0" />
                 </div>
-                <strong>14%</strong>
+              </label>
+
+              <label class="field">
+                <span>Incentivo base mensual</span>
+                <output id="sucursalBaseMensual" class="output-like">$0</output>
+              </label>
+
+              <label class="field">
+                <span>Incentivo base trimestral</span>
+                <output id="sucursalBaseTrimestral" class="output-like">$0</output>
+              </label>
+            </div>
+
+            <div class="inline-control">
+              <span>¿Es cierre trimestral?</span>
+              <div class="segmented">
+                <button type="button" class="segment is-active" id="gsCierreNo" data-value="no">No</button>
+                <button type="button" class="segment" id="gsCierreSi" data-value="si">Sí</button>
               </div>
-              <label>
-                <span>Score editable</span>
+              <input id="gsEsCierreTrimestral" type="hidden" value="no" />
+            </div>
+          </section>
+
+          <section class="section-card">
+            <div class="section-head">
+              <h2>Ventas</h2>
+              <p>El simulador calcula automáticamente el crecimiento y la calificación de ventas.</p>
+            </div>
+
+            <div class="sales-grid">
+              <div class="sales-inputs">
+                <div class="form-grid form-grid--2">
+                  <label class="field">
+                    <span>Ventas mismo mes año anterior</span>
+                    <div class="money-input">
+                      <span>$</span>
+                      <input id="gsVentasAnterior" type="number" min="0" step="1000" placeholder="0" />
+                    </div>
+                  </label>
+
+                  <label class="field">
+                    <span>Ventas mes actual</span>
+                    <div class="money-input">
+                      <span>$</span>
+                      <input id="gsVentasActual" type="number" min="0" step="1000" placeholder="0" />
+                    </div>
+                  </label>
+                </div>
+
+                <div class="computed-row">
+                  <div class="computed-box">
+                    <span>% de crecimiento</span>
+                    <strong id="gsCrecimientoVentas">0.00%</strong>
+                  </div>
+                  <div class="computed-box">
+                    <span>Calificación de ventas</span>
+                    <strong id="gsCalificacionVentas">0%</strong>
+                  </div>
+                </div>
+
+                <div class="rule-box">
+                  <strong id="gsRangoVentas">Rango aplicado: sin cálculo</strong>
+                  <p id="gsExplicacionVentas">Captura ventas del año anterior y ventas actuales para calcular el rango.</p>
+                </div>
+
+                <div class="lock-area">
+                  <h3>Candado comercial</h3>
+                  <div class="form-grid form-grid--2">
+                    <label class="field">
+                      <span>Crecimiento ticket promedio</span>
+                      <div class="percent-input">
+                        <input id="gsTicket" type="number" step="0.01" placeholder="0" />
+                        <span>%</span>
+                      </div>
+                    </label>
+
+                    <label class="field">
+                      <span>Variación de comensales</span>
+                      <div class="percent-input">
+                        <input id="gsComensales" type="number" step="0.01" placeholder="0" />
+                        <span>%</span>
+                      </div>
+                    </label>
+                  </div>
+                  <p id="candadoSucursal" class="status ok">Candado no activado. La calificación de ventas se mantiene sin ajuste.</p>
+                </div>
+              </div>
+
+              <div class="sales-summary">
+                <h3>Resultado de ventas</h3>
+                <div class="mini-line">
+                  <span>Calificación original</span>
+                  <strong id="gsVentasOriginalResumen">0%</strong>
+                </div>
+                <div class="mini-line">
+                  <span>Calificación aplicable</span>
+                  <strong id="gsVentasAplicableResumen">0%</strong>
+                </div>
+                <div class="mini-line">
+                  <span>Peso</span>
+                  <strong>50%</strong>
+                </div>
+                <div class="mini-line total">
+                  <span>Puntos aportados</span>
+                  <strong id="gsVentasPts">0.00</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section-card compact">
+            <div class="section-head">
+              <h2>Operación</h2>
+              <p>Captura las calificaciones de auditoría y look.</p>
+            </div>
+
+            <div class="form-grid form-grid--4">
+              <label class="field metric-field">
+                <span>Auditoría de almacén <b>14%</b></span>
                 <input id="gsAlmacen" type="number" min="0" max="140" step="0.01" placeholder="0" />
+                <small>Puntos: <strong id="gsAlmacenPts">0.00</strong></small>
               </label>
-              <p class="contrib">Contribución <strong id="gsAlmacenPts">0.00 pts</strong></p>
-            </article>
 
-            <article class="metric-card metric-card--green">
-              <div class="metric-head">
-                <span class="metric-icon">👨‍🍳</span>
-                <div>
-                  <h3>Cocina</h3>
-                  <p>Auditoría de cocina</p>
-                </div>
-                <strong>9%</strong>
-              </div>
-              <label>
-                <span>Score editable</span>
+              <label class="field metric-field">
+                <span>Auditoría de cocina <b>9%</b></span>
                 <input id="gsCocina" type="number" min="0" max="140" step="0.01" placeholder="0" />
+                <small>Puntos: <strong id="gsCocinaPts">0.00</strong></small>
               </label>
-              <p class="contrib">Contribución <strong id="gsCocinaPts">0.00 pts</strong></p>
-            </article>
 
-            <article class="metric-card metric-card--purple">
-              <div class="metric-head">
-                <span class="metric-icon">🍸</span>
-                <div>
-                  <h3>Bar</h3>
-                  <p>Auditoría de bar</p>
-                </div>
-                <strong>9%</strong>
-              </div>
-              <label>
-                <span>Score editable</span>
+              <label class="field metric-field">
+                <span>Auditoría de bar <b>9%</b></span>
                 <input id="gsBar" type="number" min="0" max="140" step="0.01" placeholder="0" />
+                <small>Puntos: <strong id="gsBarPts">0.00</strong></small>
               </label>
-              <p class="contrib">Contribución <strong id="gsBarPts">0.00 pts</strong></p>
-            </article>
 
-            <article class="metric-card metric-card--gold">
-              <div class="metric-head">
-                <span class="metric-icon">✨</span>
-                <div>
-                  <h3>Imagen / Look</h3>
-                  <p>Evaluación de imagen</p>
-                </div>
-                <strong>9%</strong>
-              </div>
-              <label>
-                <span>Score editable</span>
+              <label class="field metric-field">
+                <span>Evaluación de look <b>9%</b></span>
                 <input id="gsLook" type="number" min="0" max="140" step="0.01" placeholder="0" />
+                <small>Puntos: <strong id="gsLookPts">0.00</strong></small>
               </label>
-              <p class="contrib">Contribución <strong id="gsLookPts">0.00 pts</strong></p>
-            </article>
+            </div>
+          </section>
 
-            <article class="metric-card metric-card--teal">
-              <div class="metric-head">
-                <span class="metric-icon">👥</span>
-                <div>
-                  <h3>Gestión de personal</h3>
-                  <p>Rotación y capacitación</p>
+          <section class="section-card compact">
+            <div class="section-head">
+              <h2>RH</h2>
+              <p>La calificación RH se calcula con rotación y capacitación.</p>
+            </div>
+
+            <div class="rh-grid">
+              <label class="field">
+                <span>% de rotación</span>
+                <div class="percent-input">
+                  <input id="gsRotacion" type="number" min="0" step="0.01" placeholder="0" />
+                  <span>%</span>
                 </div>
-                <strong>9%</strong>
-              </div>
-              <label>
-                <span>Score editable</span>
-                <input id="gsPersonal" type="number" min="0" max="140" step="0.01" placeholder="0" />
               </label>
-              <p class="contrib">Contribución <strong id="gsPersonalPts">0.00 pts</strong></p>
-            </article>
+
+              <label class="field">
+                <span>% cumplimiento de capacitación</span>
+                <div class="percent-input">
+                  <input id="gsCapacitacion" type="number" min="0" max="140" step="0.01" placeholder="0" />
+                  <span>%</span>
+                </div>
+              </label>
+
+              <div class="formula-card">
+                <span>Calificación rotación</span>
+                <strong>3.5% / % rotación</strong>
+                <small>Con tope máximo de 140%</small>
+              </div>
+
+              <div class="computed-box small">
+                <span>Calificación rotación</span>
+                <strong id="gsCalRotacion">0%</strong>
+              </div>
+
+              <div class="computed-box small">
+                <span>Calificación RH final</span>
+                <strong id="gsCalRH">0%</strong>
+                <small>80% rotación + 20% capacitación</small>
+              </div>
+            </div>
+          </section>
+
+          <section id="gsQuarterSection" class="section-card quarter disabled">
+            <div class="section-head">
+              <h2>Incentivo trimestral</h2>
+              <p id="gsQuarterStatus">Esta sección se habilita cuando marcas que el periodo es cierre trimestral.</p>
+            </div>
+
+            <div class="form-grid form-grid--4">
+              <label class="field">
+                <span>Ingresos trimestrales</span>
+                <div class="money-input">
+                  <span>$</span>
+                  <input id="gsIngresosTrim" type="number" min="0" step="1000" placeholder="0" />
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Utilidad operativa trimestral</span>
+                <div class="money-input">
+                  <span>$</span>
+                  <input id="gsUtilidadTrim" type="number" step="1000" placeholder="0" />
+                </div>
+              </label>
+
+              <label class="field">
+                <span>¿Hubo auditoría central?</span>
+                <select id="gsTieneAuditoria">
+                  <option value="no">No</option>
+                  <option value="si">Sí</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Calificación auditoría</span>
+                <input id="gsAuditoriaTrim" type="number" min="0" max="140" step="0.01" placeholder="0" />
+              </label>
+            </div>
+          </section>
+        </div>
+
+        <aside class="result-card">
+          <h2>Resultado del periodo</h2>
+
+          <div class="result-line">
+            <span>Score mensual total</span>
+            <strong id="gsScoreFinal">0.00%</strong>
           </div>
-        </section>
 
-        <aside class="side-stack">
-          <section class="card card--accent">
-            <div class="section-title section-title--compact">
-              <span class="step step--orange">2</span>
-              <div>
-                <h2>Candado comercial</h2>
-                <p>Valida que el crecimiento sea sano.</p>
-              </div>
+          <div class="result-line">
+            <span>% de incentivo mensual</span>
+            <strong id="gsFactorMensual">0%</strong>
+          </div>
+
+          <hr />
+
+          <div class="result-line">
+            <span>Incentivo base mensual</span>
+            <strong id="gsBaseMensualResumen">$0</strong>
+          </div>
+
+          <div class="result-line highlight">
+            <span>Incentivo mensual estimado</span>
+            <strong id="gsPagoMensual">$0</strong>
+          </div>
+
+          <div class="quarter-result" id="gsQuarterResult">
+            <div class="quarter-title">
+              <h3>Incentivo trimestral</h3>
+              <span id="gsQuarterBadge">No aplica</span>
             </div>
 
-            <div class="mini-fields">
-              <label class="field">
-                <span>Crecimiento ticket promedio</span>
-                <div class="percent-input">
-                  <input id="gsTicket" type="number" step="0.01" placeholder="0" />
-                  <span>%</span>
-                </div>
-              </label>
-
-              <label class="field">
-                <span>Variación de comensales</span>
-                <div class="percent-input">
-                  <input id="gsComensales" type="number" step="0.01" placeholder="0" />
-                  <span>%</span>
-                </div>
-              </label>
+            <div class="mini-line">
+              <span>Margen</span>
+              <strong id="gsMargenTrim">No aplica</strong>
             </div>
 
-            <div id="candadoSucursal" class="status status--success">
-              <strong>✅ Candado no activado</strong>
-              <span>La calificación de ventas se mantiene sin ajuste.</span>
+            <div class="mini-line">
+              <span>Factor margen</span>
+              <strong id="gsFactorMargen">No aplica</strong>
             </div>
 
-            <div id="candadoDetalle" class="formula-box is-hidden"></div>
-          </section>
-
-          <section class="result-panel">
-            <div class="result-panel__head">
-              <div>
-                <h2>Resultado mensual</h2>
-                <p>Score final del periodo</p>
-              </div>
-              <strong><span id="gsScoreFinal">0.00</span> pts</strong>
+            <div class="mini-line">
+              <span>Factor auditoría</span>
+              <strong id="gsFactorAuditoria">No aplica</strong>
             </div>
 
-            <div class="progress">
-              <span id="gsProgressBar"></span>
+            <div class="mini-line total">
+              <span>Incentivo trimestral</span>
+              <strong id="gsPagoTrimestral">$0</strong>
             </div>
+          </div>
 
-            <div class="range-row">
-              <span>Rango: <strong id="gsRangoMensual">Sin cálculo</strong></span>
-              <span>Pago: <strong id="gsFactorMensual">0%</strong></span>
-            </div>
+          <div class="grand-total">
+            <span>Total estimado del periodo</span>
+            <strong id="gsPagoTotal">$0</strong>
+          </div>
 
-            <div class="pay-highlight">
-              <span>Incentivo mensual estimado</span>
-              <strong id="gsPagoMensual">$0</strong>
-            </div>
-          </section>
+          <p class="note">Los valores mostrados son estimaciones. Los resultados finales pueden variar según validaciones corporativas.</p>
         </aside>
       </div>
-
-      <section id="gsQuarterCard" class="card quarter-card is-disabled">
-        <div class="section-title">
-          <span class="step">3</span>
-          <div>
-            <h2>Incentivo trimestral</h2>
-            <p id="gsQuarterStatus">Se habilitará cuando indiques que el periodo corresponde a cierre trimestral.</p>
-          </div>
-        </div>
-
-        <div class="quarter-grid">
-          <label class="field">
-            <span>Ingresos trimestrales</span>
-            <div class="money-input">
-              <span>$</span>
-              <input id="gsIngresosTrim" type="number" min="0" step="1000" placeholder="0" />
-            </div>
-          </label>
-
-          <label class="field">
-            <span>Utilidad operativa trimestral</span>
-            <div class="money-input">
-              <span>$</span>
-              <input id="gsUtilidadTrim" type="number" step="1000" placeholder="0" />
-            </div>
-          </label>
-
-          <article class="calc-cell">
-            <span>Margen operativo calculado</span>
-            <strong id="gsMargenTrim">No aplica</strong>
-          </article>
-
-          <article class="calc-cell">
-            <span>Factor por margen</span>
-            <strong id="gsFactorMargen">No aplica</strong>
-          </article>
-
-          <label class="field">
-            <span>¿Hubo auditoría central?</span>
-            <select id="gsTieneAuditoria">
-              <option value="no">No</option>
-              <option value="si">Sí</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Calificación auditoría</span>
-            <input id="gsAuditoriaTrim" type="number" min="0" max="140" step="0.01" placeholder="0" />
-          </label>
-
-          <article class="calc-cell">
-            <span>Impacto auditoría</span>
-            <strong id="gsFactorAuditoria">No aplica</strong>
-          </article>
-
-          <article class="calc-cell calc-cell--result">
-            <span>Incentivo trimestral estimado</span>
-            <strong id="gsPagoTrimestral">$0</strong>
-          </article>
-        </div>
-
-        <p class="formula" id="gsFormulaTrim">El incentivo trimestral no se calcula porque el periodo no fue marcado como cierre trimestral.</p>
-      </section>
-
-      <section class="total-card">
-        <div class="total-card__icon">💵</div>
-        <div>
-          <p>Total estimado del periodo</p>
-          <small id="gsTotalDetalle">Solo incentivo mensual.</small>
-        </div>
-        <strong id="gsPagoTotal">$0</strong>
-      </section>
-
-      <details class="technical">
-        <summary>Ver detalle técnico del cálculo</summary>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Rubro</th>
-                <th>Indicador</th>
-                <th>Peso</th>
-                <th>Score capturado</th>
-                <th>Score aplicable</th>
-                <th>Puntos aportados</th>
-              </tr>
-            </thead>
-            <tbody id="tablaSucursalMensual"></tbody>
-          </table>
-        </div>
-      </details>
     </section>
 
     <!-- GERENTE REGIONAL -->
     <section id="regional" class="screen">
-      <section class="intro-card">
-        <div>
-          <p class="eyebrow">Esquema regional</p>
-          <h1>Gerente Regional</h1>
-          <p>Simula tu incentivo con base en la ejecución y rentabilidad de tu región.</p>
-        </div>
-        <button class="ghost-button" id="resetRegional" type="button">Limpiar</button>
-      </section>
+      <div class="layout">
+        <div class="workspace">
+          <section class="section-card">
+            <div class="section-head">
+              <h2>Datos generales</h2>
+              <button class="ghost-button" type="button" id="resetRegional">Limpiar</button>
+            </div>
 
-      <section class="input-ribbon input-ribbon--regional" aria-label="Datos generales regionales">
-        <label class="field">
-          <span>Región</span>
-          <input id="regionalNombre" type="text" placeholder="Ej. Centro" />
-        </label>
+            <div class="form-grid form-grid--4">
+              <label class="field">
+                <span>Región</span>
+                <select id="regionalNombre"></select>
+              </label>
 
-        <label class="field">
-          <span>Sucursales a cargo</span>
-          <select id="grSucursales">
-            <option value="">Seleccionar</option>
-            <option value="2">2 sucursales</option>
-            <option value="3">3 sucursales</option>
-            <option value="4">4 sucursales</option>
-            <option value="6">6 sucursales</option>
-          </select>
-        </label>
+              <label class="field">
+                <span>Sucursales a cargo</span>
+                <select id="grSucursales">
+                  <option value="">Seleccionar</option>
+                  <option value="2">2 sucursales</option>
+                  <option value="3">3 sucursales</option>
+                  <option value="4">4 sucursales</option>
+                  <option value="6">6 sucursales</option>
+                </select>
+              </label>
 
-        <div class="field">
-          <span>¿Este periodo corresponde a cierre trimestral?</span>
-          <div class="segmented" role="group" aria-label="Cierre trimestral regional">
-            <button id="grCierreNo" class="segment is-active" type="button" data-value="no">No</button>
-            <button id="grCierreSi" class="segment" type="button" data-value="si">Sí</button>
-          </div>
-          <input id="grEsCierreTrimestral" type="hidden" value="no" />
-        </div>
-      </section>
+              <label class="field">
+                <span>Incentivo base mensual</span>
+                <output id="grBaseMensual" class="output-like">$0</output>
+              </label>
 
-      <section class="kpi-grid">
-        <article class="kpi kpi--orange">
-          <span class="kpi-icon">🎯</span>
-          <div>
-            <p>Objetivo mensual</p>
-            <strong id="grObjetivoMensual">$0</strong>
-          </div>
-        </article>
+              <label class="field">
+                <span>Incentivo base trimestral</span>
+                <output id="grBaseTrimestral" class="output-like">$0</output>
+              </label>
+            </div>
 
-        <article class="kpi kpi--orange">
-          <span class="kpi-icon">📅</span>
-          <div>
-            <p>Objetivo trimestral</p>
-            <strong id="grObjetivoTrimestral">$0</strong>
-          </div>
-        </article>
+            <div class="inline-control">
+              <span>¿Es cierre trimestral?</span>
+              <div class="segmented">
+                <button type="button" class="segment is-active" id="grCierreNo" data-value="no">No</button>
+                <button type="button" class="segment" id="grCierreSi" data-value="si">Sí</button>
+              </div>
+              <input id="grEsCierreTrimestral" type="hidden" value="no" />
+            </div>
+          </section>
 
-        <article class="kpi kpi--blue">
-          <span class="kpi-icon">🏪</span>
-          <div>
-            <p>Promedio región</p>
-            <strong><span id="grPromedioTop">0.00</span> pts</strong>
-          </div>
-        </article>
-
-        <article class="kpi kpi--green">
-          <span class="kpi-icon">💵</span>
-          <div>
-            <p>Total estimado</p>
-            <strong id="grTotalTop">$0</strong>
-          </div>
-        </article>
-      </section>
-
-      <div class="content-grid content-grid--regional">
-        <section class="card">
-          <div class="section-title">
-            <span class="step">1</span>
-            <div>
+          <section class="section-card">
+            <div class="section-head">
               <h2>Calificación de sucursales</h2>
               <p>Captura la calificación mensual de cada sucursal de la región.</p>
             </div>
-          </div>
 
-          <div id="grCalificaciones" class="branch-grid">
-            <p class="empty-state">Selecciona el número de sucursales para capturar sus calificaciones.</p>
-          </div>
-
-          <div class="average-strip">
-            <span>👥</span>
-            <p>Promedio regional:</p>
-            <strong id="grPromedio">0.00</strong>
-          </div>
-        </section>
-
-        <section class="result-panel result-panel--regional">
-          <div class="result-panel__head">
-            <div>
-              <h2>Resultado mensual</h2>
-              <p>Promedio simple de sucursales</p>
+            <div id="grCalificaciones" class="branch-grid">
+              <p class="empty-state">Selecciona el número de sucursales para capturar sus calificaciones.</p>
             </div>
-            <strong><span id="grPromedioResult">0.00</span> pts</strong>
+
+            <div class="rule-box">
+              <strong>Promedio regional: <span id="grPromedio">0.00%</span></strong>
+              <p>El incentivo mensual se calcula con el promedio simple de las calificaciones de las sucursales.</p>
+            </div>
+          </section>
+
+          <section id="grQuarterSection" class="section-card quarter disabled">
+            <div class="section-head">
+              <h2>Incentivo trimestral</h2>
+              <p id="grQuarterStatus">Esta sección se habilita cuando marcas que el periodo es cierre trimestral.</p>
+            </div>
+
+            <div class="form-grid form-grid--3">
+              <label class="field">
+                <span>Ingresos trimestrales región</span>
+                <div class="money-input">
+                  <span>$</span>
+                  <input id="grIngresosTrim" type="number" min="0" step="1000" placeholder="0" />
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Utilidad operativa trimestral</span>
+                <div class="money-input">
+                  <span>$</span>
+                  <input id="grUtilidadTrim" type="number" step="1000" placeholder="0" />
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Sucursales-mes con utilidad positiva</span>
+                <input id="grSucursalesPositivas" type="number" min="0" step="1" placeholder="Ej. 7" />
+                <small id="grBaseSucursalesMes">Base trimestral: selecciona las sucursales a cargo.</small>
+              </label>
+
+              <label class="field">
+                <span>¿Hubo auditoría central?</span>
+                <select id="grTieneAuditoria">
+                  <option value="no">No</option>
+                  <option value="si">Sí</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Calificación auditoría</span>
+                <input id="grAuditoriaTrim" type="number" min="0" max="140" step="0.01" placeholder="0" />
+              </label>
+            </div>
+          </section>
+        </div>
+
+        <aside class="result-card">
+          <h2>Resultado del periodo</h2>
+
+          <div class="result-line">
+            <span>Promedio regional</span>
+            <strong id="grPromedioResumen">0.00%</strong>
           </div>
 
-          <div class="progress">
-            <span id="grProgressBar"></span>
+          <div class="result-line">
+            <span>% de incentivo mensual</span>
+            <strong id="grFactorMensual">0%</strong>
           </div>
 
-          <div class="range-row">
-            <span>Rango: <strong id="grRangoMensual">Sin cálculo</strong></span>
-            <span>Pago: <strong id="grFactorMensual">0%</strong></span>
+          <hr />
+
+          <div class="result-line">
+            <span>Incentivo base mensual</span>
+            <strong id="grBaseMensualResumen">$0</strong>
           </div>
 
-          <div class="pay-highlight">
+          <div class="result-line highlight">
             <span>Incentivo mensual estimado</span>
             <strong id="grPagoMensual">$0</strong>
           </div>
-        </section>
-      </div>
 
-      <section id="grQuarterCard" class="card quarter-card is-disabled">
-        <div class="section-title">
-          <span class="step">2</span>
-          <div>
-            <h2>Incentivo trimestral</h2>
-            <p id="grQuarterStatus">Se habilitará cuando indiques que el periodo corresponde a cierre trimestral.</p>
+          <div class="quarter-result" id="grQuarterResult">
+            <div class="quarter-title">
+              <h3>Incentivo trimestral</h3>
+              <span id="grQuarterBadge">No aplica</span>
+            </div>
+
+            <div class="mini-line">
+              <span>Margen regional</span>
+              <strong id="grMargenTrim">No aplica</strong>
+            </div>
+
+            <div class="mini-line">
+              <span>% utilidad positiva</span>
+              <strong id="grPctSucursalesPositivas">No aplica</strong>
+            </div>
+
+            <div class="mini-line">
+              <span>Multiplicador consistencia</span>
+              <strong id="grFactorSucursales">No aplica</strong>
+            </div>
+
+            <div class="mini-line">
+              <span>Factor auditoría</span>
+              <strong id="grFactorAuditoria">No aplica</strong>
+            </div>
+
+            <div class="mini-line total">
+              <span>Incentivo trimestral</span>
+              <strong id="grPagoTrimestral">$0</strong>
+            </div>
           </div>
-        </div>
 
-        <div class="quarter-grid quarter-grid--regional">
-          <label class="field">
-            <span>Ingresos trimestrales región</span>
-            <div class="money-input">
-              <span>$</span>
-              <input id="grIngresosTrim" type="number" min="0" step="1000" placeholder="0" />
-            </div>
-          </label>
+          <div class="grand-total">
+            <span>Total estimado del periodo</span>
+            <strong id="grPagoTotal">$0</strong>
+          </div>
 
-          <label class="field">
-            <span>Utilidad operativa trimestral</span>
-            <div class="money-input">
-              <span>$</span>
-              <input id="grUtilidadTrim" type="number" step="1000" placeholder="0" />
-            </div>
-          </label>
-
-          <article class="calc-cell">
-            <span>Margen operativo regional</span>
-            <strong id="grMargenTrim">No aplica</strong>
-          </article>
-
-          <article class="calc-cell">
-            <span>Factor por margen</span>
-            <strong id="grFactorMargen">No aplica</strong>
-          </article>
-
-          <label class="field">
-            <span>Sucursales-mes con utilidad positiva</span>
-            <input id="grSucursalesPositivas" type="number" min="0" step="1" placeholder="Ej. 7" />
-            <small id="grBaseSucursalesMes">Base trimestral: selecciona las sucursales a cargo.</small>
-          </label>
-
-          <article class="calc-cell">
-            <span>% con utilidad positiva</span>
-            <strong id="grPctSucursalesPositivas">No aplica</strong>
-          </article>
-
-          <article class="calc-cell">
-            <span>Multiplicador por consistencia</span>
-            <strong id="grFactorSucursales">No aplica</strong>
-          </article>
-
-          <label class="field">
-            <span>¿Hubo auditoría central?</span>
-            <select id="grTieneAuditoria">
-              <option value="no">No</option>
-              <option value="si">Sí</option>
-            </select>
-          </label>
-
-          <label class="field">
-            <span>Calificación promedio auditoría</span>
-            <input id="grAuditoriaTrim" type="number" min="0" max="140" step="0.01" placeholder="0" />
-          </label>
-
-          <article class="calc-cell">
-            <span>Impacto auditoría</span>
-            <strong id="grFactorAuditoria">No aplica</strong>
-          </article>
-        </div>
-
-        <div class="quarter-pay">
-          <span>Incentivo trimestral estimado</span>
-          <strong id="grPagoTrimestral">$0</strong>
-        </div>
-
-        <p class="formula" id="grFormulaTrim">El incentivo trimestral no se calcula porque el periodo no fue marcado como cierre trimestral.</p>
-      </section>
-
-      <section class="total-card">
-        <div class="total-card__icon">💵</div>
-        <div>
-          <p>Total estimado del periodo</p>
-          <small id="grTotalDetalle">Solo incentivo mensual.</small>
-        </div>
-        <strong id="grPagoTotal">$0</strong>
-      </section>
+          <p class="note">Los valores mostrados son estimaciones. Los resultados finales pueden variar según validaciones corporativas.</p>
+        </aside>
+      </div>
     </section>
-
-    <p class="disclaimer">Resultado simulado. Sujeto a validación oficial del cierre.</p>
   </main>
 
   <script src="app.js"></script>
