@@ -25,28 +25,42 @@ function pctText(n) {
 }
 
 const sucursales = [
-  "Cabanna San Jerónimo",
-  "Cabanna Santa Fe",
   "Cabanna Polanco",
+  "Cabanna Puebla",
+  "Cabanna Av México",
+  "Cabanna Cd Juarez",
+  "Cabanna Mexicali",
+  "Cabanna Tijuana",
+  "Cabanna Culiacán",
   "Los Arcos San Jerónimo",
   "Los Arcos Insurgentes",
-  "Los Arcos Coyoacán",
   "Los Arcos Satélite",
-  "Los Arcos Lomas",
-  "Los Arcos Interlomas",
+  "Los Arcos Culiacán",
   "Los Arcos Tijuana",
   "Los Arcos León",
-  "Lorenza",
+  "Los Arcos Toluca",
+  "Los Arcos Lázaro Cárdenas",
+  "Los Arcos Acueducto",
+  "Los Arcos Cd Juarez",
+  "Los Arcos Mexicali",
+  "Los Arcos Morones",
+  "Los Arcos Garza Sada",
+  "Los Arcos Mazatlán",
+  "Los Arcos Aguascalientes",
+  "Lorenza Tijuana",
+  "Lorenza Culiacán",
   "Casa de Leo"
 ];
 
 const regiones = [
   "Centro",
   "Tijuana",
-  "Culiacán",
+  "Pacífico",
   "Monterrey",
-  "León",
-  "Puebla / Toluca"
+  "Guadalajara",
+  "Mexicali",
+  "Bajío",
+  "Juárez"
 ];
 
 function fillSelect(id, options, placeholder) {
