@@ -32,6 +32,8 @@ const sucursales = [
   "Cabanna Mexicali",
   "Cabanna Tijuana",
   "Cabanna Culiacán",
+  "Cabanna Metropolitan",
+  "Gourmetería",
   "Los Arcos San Jerónimo",
   "Los Arcos Insurgentes",
   "Los Arcos Satélite",
